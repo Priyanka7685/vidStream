@@ -11,4 +11,9 @@ const router = Router()
 
 router.use(verifyJWT)
 
-router.route("")
+router.route("/").post(createTweet)
+router.route("/user/:userId").get(getUserTweet)
+router.route("/:tweetId").patch(updateTweet)
+router.route("/:tweetId").delete(deleteTweet)
+
+export default router

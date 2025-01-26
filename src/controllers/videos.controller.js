@@ -14,8 +14,8 @@ const getAllVideos = asyncHandler( async(req, res) => {
 
         if(query) {
             filter.$or = [
-                { title },
-                { description }
+                { title: { $regex: query, $options: "i"} },
+                { description: { $regex: query, $options: "i"} }
             ];
         }
 
@@ -51,12 +51,14 @@ const getAllVideos = asyncHandler( async(req, res) => {
                 $match: filter
             },
             {
-                $count: 1
+                $count: "total"
             }
         ])
 
+        const total = totalVideos.length > 0 ? totalVideos[0].total : 0
+
         res.status(200).json(new ApiResponse(200, videos, "All videos fetched successfully", {
-            total: totalVideos,
+            total,
             page: Number(page),
             pages: Math.ceil(totalVideos / limit),
             limit: Number(limit)
@@ -136,7 +138,6 @@ const getVideoById = asyncHandler( async(req, res) => {
     const { videoId } = req.params
 
     
-    
     try {
         const video = await Video.findById(videoId)
         
@@ -182,12 +183,12 @@ const updateVideo = asyncHandler(async (req, res) => {
     let video
     try {
      video = await Video.findByIdAndUpdate(
-        req.videoId,
+        videoId,
         {
             $set: {
                 title,
                 description,
-                thumbnail: thumbnail.url
+                thumbnail: newThumbnail.url
             }
         },
         { new: true }
@@ -222,8 +223,6 @@ const deleteVideo = asyncHandler( async(req, res) => {
     }
         await deleteFromCloudinary(video.videoId)
 
-
-
     return res.status(200).json( new ApiResponse(200, video, "Video deleted successfully"))
 })
 
@@ -234,7 +233,7 @@ const togglePublishStatus = asyncHandler( async (req, res) => {
 
     if(!videoId) {
         throw new ApiError(404, "Video id is required")
-    }
+    } 
 
     try {
         const video = await Video.findById(videoId)
@@ -253,6 +252,7 @@ const togglePublishStatus = asyncHandler( async (req, res) => {
             success: true,
             message: "Video publish status updated successfully",
             data: video,
+            isPublished: true
         })
 
     } catch (error) {
