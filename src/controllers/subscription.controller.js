@@ -116,7 +116,7 @@ const getSubscribedChannels = asyncHandler( async(req, res) => {
             throw new ApiError(404,"No comments found")
         }
 
-        res.status(200).json(new ApiResponse(200, channelsUserSubscribed, "Comment fetched successfully", {
+        res.status(200).json(new ApiResponse(200, channelsUserSubscribed, "Subscibed channels fetched successfully", {
             total: totalChannelsUserSubscribed,
             page: Number(page),
             pages: Math.ceil(totalChannelsUserSubscribed/limit),

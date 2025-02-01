@@ -130,6 +130,9 @@ const getLikedVideos = asyncHandler( async(req, res) => {
             [sortBy]: sortType === 'desc' ? -1:1
         }
 
+        const existingLike = await Like.findOne({ video: videoId, likedBy: userId})
+
+        
         const likedVideos = await Like.aggregate ([
             {
                 $match: filter
@@ -144,9 +147,10 @@ const getLikedVideos = asyncHandler( async(req, res) => {
                 $limit: Number(limit)
             }
         ])
+    
         
-
         const totalLikes = await Like.countDocuments(filter)  //Counting likes instead of videos
+        
         
                 res.status(200).json(new ApiResponse(200, likedVideos, "All videos fetched successfully", {
                     total: totalLikes,
@@ -155,6 +159,7 @@ const getLikedVideos = asyncHandler( async(req, res) => {
                     limit: Number(limit)
                 })
             )
+        
         
     } catch (error) {
         res.status(404).json({

@@ -137,21 +137,35 @@ const publishVideo = asyncHandler( async(req, res) => {
 const getVideoById = asyncHandler( async(req, res) => {
     const { videoId } = req.params
 
+    if(!videoId) {
+        throw new ApiError("Video id is required")
+    }
     
     try {
-        const video = await Video.findById(videoId)
-        
-        if(!videoId) {
-            throw new ApiError("Video id is required")
-        }
-    
-        res.status(200).json({
-            success:true,
-            data: video
-        })
 
+        const video = await Video.findById(videoId);
+
+        if (!video) {
+            throw new ApiError(404, "Video not found");
+        }
+
+        
         video.views += 1;
         await video.save()
+
+        return res.status(200).json({
+            success: true,
+            id: videoId,
+            message: "Video fetched successfully",
+            data: {
+                title: video.title,
+                description: video.description,
+                views: video.views,
+                thumbnail: video.thumbnail,
+                videoFile: video.videoFile,
+                isPublished: video.isPublished,
+            }
+        });
 
     } catch (error) {
         throw new ApiError(404, "Error in retrieving videos")
@@ -268,5 +282,6 @@ export {
     getAllVideos,
     updateVideo,
     deleteVideo,
-    togglePublishStatus
+    togglePublishStatus,
+    
 }

@@ -41,7 +41,7 @@ const createPlaylist = asyncHandler(async(req, res) => {
 })
 
 const getUserPlaylist = asyncHandler( async(req, res) => {
-    const { userId } = req.params
+    const { userId } = req.params 
     const { page = 1, limit = 10 } = req.query
 
     if(!userId) {
@@ -49,7 +49,7 @@ const getUserPlaylist = asyncHandler( async(req, res) => {
     }
 
     try {
-        const filter = { owner: new mongoose.Types.ObjectId(userId)};
+        const filter = { };
         // const filter = { owner: userId};
         const sort = { createdAt: -1 }
 

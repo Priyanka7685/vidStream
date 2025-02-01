@@ -5,7 +5,8 @@ import {
     getAllVideos,
     updateVideo,
     deleteVideo, 
-    togglePublishStatus
+    togglePublishStatus,
+    // increaseViewCount
  } from "../controllers/videos.controller.js"
  import { upload } from "../middlewares/multer.middlewares.js"
  import {verifyJWT} from "../middlewares/auth.middlewares.js" 
@@ -34,6 +35,7 @@ router.route("/:videoId").get(getVideoById)
 router.route("/:videoId").delete(deleteVideo)
 router.route("/:videoId").patch(upload.single("thumbnail"),updateVideo)
 router.route("/toggle/publish/:videoId").patch(togglePublishStatus)
+// router.route("/views/:videoId").get(increaseViewCount)
 
 
 

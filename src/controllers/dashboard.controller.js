@@ -9,6 +9,10 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const getChannelStats = asyncHandler(async (req, res) => {
     const userId = req.user._id;  // Get the userId from the authenticated user
+    const videoId = req.videoId
+    const subscriptionId = req.subscriptionId
+    const likeId = req.likeId
+    const viewId = req.viewId
 
     
     if (!userId) {
@@ -17,20 +21,20 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
     try {
   
-        const totalVideos = await Video.countDocuments({ userId });
+        const totalVideos = await Video.countDocuments({ videoId });
 
         const totalViews = await Video.aggregate([
-            { $match: { userId } },
+            { $match: { viewId } },
             { $group: { _id: null, totalViews: { $sum: "$views" } } }
         ]);
 
         const views = totalViews.length > 0 ? totalViews[0].totalViews : 0;
 
-        const totalSubscribers = await Subscription.countDocuments({ channelId: userId });
+        const totalSubscribers = await Subscription.countDocuments({ subscriptionId });
 
 
         const totalLikes = await Like.aggregate([
-            { $match: { userId } },  
+            { $match: { likeId } },  
             { $group: { _id: null, totalLikes: { $sum: 1 } } }
         ]);
 
@@ -48,7 +52,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
         console.error("Error fetching channel stats:", error);
         throw new ApiError(500, "Failed to fetch channel stats");
     }
-});  // Wrong
+});  
 
 
 const getChannelVideos = asyncHandler(async (req, res) => {
